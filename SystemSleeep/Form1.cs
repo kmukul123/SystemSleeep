@@ -20,17 +20,6 @@ namespace SystemSleeep
         public Form1()
         {
             InitializeComponent();
-            if (DateTime.Now> new DateTime(2019, 10,1))
-            {
-                MessageBox.Show(@"Expired: please get new version from
-https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8");
-                 Environment.Exit(1);
-                return;
-            }
-            checkBoxstartup.Checked= IsStartupSet();
-            //System.Threading.Thread.Sleep(70000);
-            MonitorOff = !SystemHelper.IsMonitorOn();
-            toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are also donated to charity\nThanks");
         }
 
         private void frmMain_Resize(object sender, EventArgs e)
@@ -51,11 +40,18 @@ https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8");
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //if (DateTime.Today.Year > 2016)
-            //{
-            //    MessageBox.Show("SystemSleeep: This application has expired");
-            //    Application.Exit();
-            //}
+            if (DateTime.Now > new DateTime(2019, 10, 1))
+            {
+                MessageBox.Show(@"Expired: please get new version from
+https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8");
+                Environment.Exit(1);
+                return;
+            }
+            checkBoxstartup.Checked = IsStartupSet();
+            //System.Threading.Thread.Sleep(70000);
+            MonitorOff = !SystemHelper.IsMonitorOn();
+            toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are also donated to charity\nThanks");
+
 
             string defaultidletime = GetSetting(this.DefaultIdleTimeConfigName);
             string sleepifMonitoSetting = GetSetting(this.sleepifMonitorOffConfigName);
