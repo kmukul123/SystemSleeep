@@ -37,6 +37,8 @@
             this.SleepNow = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.sleepIfMonitorOff = new System.Windows.Forms.CheckBox();
+            this.donateButton = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -103,17 +105,32 @@
             this.sleepIfMonitorOff.AutoSize = true;
             this.sleepIfMonitorOff.Location = new System.Drawing.Point(46, 104);
             this.sleepIfMonitorOff.Name = "sleepIfMonitorOff";
-            this.sleepIfMonitorOff.Size = new System.Drawing.Size(124, 17);
+            this.sleepIfMonitorOff.Size = new System.Drawing.Size(193, 17);
             this.sleepIfMonitorOff.TabIndex = 5;
-            this.sleepIfMonitorOff.Text = "sleep if Monitor is Off";
+            this.sleepIfMonitorOff.Text = "sleep if Monitor is Off (Experimental)";
             this.sleepIfMonitorOff.UseVisualStyleBackColor = true;
             this.sleepIfMonitorOff.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // donateButton
+            // 
+            this.donateButton.Location = new System.Drawing.Point(134, 168);
+            this.donateButton.Name = "donateButton";
+            this.donateButton.Size = new System.Drawing.Size(120, 25);
+            this.donateButton.TabIndex = 6;
+            this.donateButton.Text = "Donate";
+            this.donateButton.UseVisualStyleBackColor = true;
+            this.donateButton.Click += new System.EventHandler(this.DonateButton_Click);
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.ToolTipTitle = "Support us!";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.donateButton);
             this.Controls.Add(this.sleepIfMonitorOff);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.SleepNow);
@@ -140,6 +157,8 @@
         private System.Windows.Forms.Button SleepNow;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox sleepIfMonitorOff;
+        private System.Windows.Forms.Button donateButton;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

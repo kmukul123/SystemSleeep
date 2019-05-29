@@ -23,6 +23,7 @@ namespace SystemSleeep
             checkBoxstartup.Checked= IsStartupSet();
             //System.Threading.Thread.Sleep(70000);
             MonitorOff = !SystemHelper.IsMonitorOn();
+            toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are also donated to charity\nThanks");
         }
 
         private void frmMain_Resize(object sender, EventArgs e)
@@ -258,6 +259,26 @@ namespace SystemSleeep
                 rk.SetValue("SystemSleeep", Application.ExecutablePath.ToString());
             else
                 rk.DeleteValue("SystemSleeep", false);            
+        }
+
+        private void DonateButton_Click(object sender, EventArgs e)
+        {
+            string url = "";
+
+            string business = "mukulk@outlook.com";
+            string description = "Donation-OutlookReminders";            // '%20' represents a space. remember HTML!
+            string country = "US";                  // AU, US, etc.
+            string currency = "USD";                 // AUD, USD, etc.
+
+            url += "https://www.paypal.com/cgi-bin/webscr" +
+                "?cmd=" + "_donations" +
+                "&business=" + business +
+                "&lc=" + country +
+                "&item_name=" + description +
+                "&currency_code=" + currency +
+                "&bn=" + "PP%2dDonationsBF";
+
+            System.Diagnostics.Process.Start(url);
         }
 
         private bool IsStartupSet()
