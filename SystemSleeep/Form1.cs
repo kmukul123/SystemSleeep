@@ -20,6 +20,7 @@ namespace SystemSleeep
         public Form1()
         {
             InitializeComponent();
+            checkBoxstartup.Checked= IsStartupSet();
             //System.Threading.Thread.Sleep(70000);
             MonitorOff = !SystemHelper.IsMonitorOn();
         }
@@ -257,6 +258,18 @@ namespace SystemSleeep
                 rk.SetValue("SystemSleeep", Application.ExecutablePath.ToString());
             else
                 rk.DeleteValue("SystemSleeep", false);            
+        }
+
+        private bool IsStartupSet()
+        {
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey
+            ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            Object o = rk.GetValue("SystemSleeep");
+            if (o != null)
+                return true;
+            else
+                return false;
         }
 
     }
