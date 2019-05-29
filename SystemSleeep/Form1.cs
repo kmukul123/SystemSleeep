@@ -20,6 +20,13 @@ namespace SystemSleeep
         public Form1()
         {
             InitializeComponent();
+            if (DateTime.Now> new DateTime(2019, 10,1))
+            {
+                MessageBox.Show(@"Expired: please get new version from
+https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8");
+                 Environment.Exit(1);
+                return;
+            }
             checkBoxstartup.Checked= IsStartupSet();
             //System.Threading.Thread.Sleep(70000);
             MonitorOff = !SystemHelper.IsMonitorOn();
