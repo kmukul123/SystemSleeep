@@ -42,8 +42,11 @@ namespace SystemSleeep
         {
             if (DateTime.Now > new DateTime(2019, 10, 1))
             {
-                MessageBox.Show(@"Expired: please get new version from
-https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8");
+                var url = "https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8";
+                MessageBox.Show("Expired:",$@"Please Get new version from
+{url}
+The site should open in your browser");
+                Process.Start(url);
                 Environment.Exit(1);
                 return;
             }
