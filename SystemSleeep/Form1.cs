@@ -40,13 +40,23 @@ namespace SystemSleeep
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (DateTime.Now > new DateTime(2019, 10, 1))
+            if (DateTime.Now > new DateTime(2020, 10, 1))
             {
                 var url = "https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8";
                 Process.Start(url);
                 MessageBox.Show($@"Please Get new version from
 {url}
 The site should open in your browser", "Expired:");
+                Environment.Exit(1);
+                return;
+            }
+            if (DateTime.Now > new DateTime(2020, 09, 1))
+            {
+                var url = "https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8";
+                Process.Start(url);
+                MessageBox.Show($@"Please Get new version from
+{url}
+The site should open in your browser", "About to expire :");
                 Environment.Exit(1);
                 return;
             }
