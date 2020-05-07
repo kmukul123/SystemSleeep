@@ -17,10 +17,34 @@ namespace SystemSleeep
     {
         IdleTimer idletimer;
         volatile bool MonitorOff;
+        private readonly IntPtr _ScreenStateNotify;
         public Form1()
         {
             InitializeComponent();
+            //var wih = new WindowInteropHelper(this);
+            //var hwnd = wih.EnsureHandle();
+            //_ScreenStateNotify = ScreenHelper.RegisterPowerSettingNotification(this.Handle, ref ScreenHelper.GUID_CONSOLE_DISPLAY_STATE, ScreenHelper.DEVICE_NOTIFY_WINDOW_HANDLE);
+            
         }
+
+        //private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        //{
+        //    // handler of console display state system event 
+        //    if (msg == NativeMethods.WM_POWERBROADCAST)
+        //    {
+        //        if (wParam.ToInt32() == NativeMethods.PBT_POWERSETTINGCHANGE)
+        //        {
+        //            var s = (NativeMethods.POWERBROADCAST_SETTING)Marshal.PtrToStructure(lParam, typeof(NativeMethods.POWERBROADCAST_SETTING));
+        //            if (s.PowerSetting == NativeMethods.GUID_CONSOLE_DISPLAY_STATE)
+        //            {
+        //                VM?.ConsoleDisplayStateChanged(s.Data);
+        //            }
+        //        }
+        //    }
+
+        //    return IntPtr.Zero;
+        //}
+
 
         private void frmMain_Resize(object sender, EventArgs e)
         {
@@ -47,19 +71,8 @@ namespace SystemSleeep
                 MessageBox.Show($@"Please Get new version from
 {url}
 The site should open in your browser", "Expired:");
-                Environment.Exit(1);
-                return;
             }
-            if (DateTime.Now > new DateTime(2020, 09, 1))
-            {
-                var url = "https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8";
-                Process.Start(url);
-                MessageBox.Show($@"Please Get new version from
-{url}
-The site should open in your browser", "About to expire :");
-                Environment.Exit(1);
-                return;
-            }
+
             checkBoxstartup.Checked = IsStartupSet();
             //System.Threading.Thread.Sleep(70000);
             MonitorOff = !SystemHelper.IsMonitorOn();
@@ -122,6 +135,7 @@ The site should open in your browser", "About to expire :");
         {
             notifyIcon1.BalloonTipText = "SystemSleep will put your system to sleep now";
             notifyIcon1.ShowBalloonTip(500);
+            ScreenHelper.TurnOffScreen(this.Handle);
         }
 
         async void idletimer_IdleTimeReached(object sender, EventArgs e)
@@ -255,9 +269,16 @@ The site should open in your browser", "About to expire :");
 
         }
 
-        private void SleepNow_Click(object sender, EventArgs e)
+        private async void SleepNow_Click(object sender, EventArgs e)
         {
-            SystemHelper.Suspend();
+            ScreenHelper.TurnOffScreen(this.Handle);
+            await Task.Delay(1000);
+            var idletime = Win32Helper.GetIdleTimeInSecs();
+            Trace.WriteLine($"SleepNow_Click idletime {idletime}");
+            if (idletime > 0)
+            {
+                SystemHelper.Suspend();
+            }
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
