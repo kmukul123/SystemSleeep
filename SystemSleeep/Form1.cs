@@ -272,7 +272,7 @@ The site should open in your browser", "Expired:");
         private async void SleepNow_Click(object sender, EventArgs e)
         {
             ScreenHelper.TurnOffScreen(this.Handle);
-            await Task.Delay(1000);
+            await Task.Delay(2000);
             var idletime = Win32Helper.GetIdleTimeInSecs();
             Trace.WriteLine($"SleepNow_Click idletime {idletime}");
             if (idletime > 0)
