@@ -19,6 +19,7 @@ namespace SystemSleeep
         public event IdleTimeReachedEventHandler IdleTimeReached;
         public event IdleTimeReachedEventHandler BeforeIdleTimeReached;
         public event IdleTimeReachedEventHandler IdleTimeChanged;
+        public const int internaltimerInterval = 30;
 
         public IdleTimer(int idleTimeInMins)
         {
@@ -26,7 +27,7 @@ namespace SystemSleeep
             #if DEBUG
             this.idlechecktimer = new Timer(5*1000);
 #else
-            this.idlechecktimer = new Timer(30*1000);
+            this.idlechecktimer = new Timer(internaltimerInterval * 1000);
 #endif
             this.idlechecktimer.Elapsed += idlechecktimer_Elapsed;
             this.idlechecktimer.Start();
@@ -57,7 +58,6 @@ namespace SystemSleeep
         {
             try
             {
-                
                 this.idlechecktimer.Stop();
                 idletimeinsecs = Win32Helper.GetIdleTimeInSecs();
                 if (this.IdleTimeChanged!= null)
