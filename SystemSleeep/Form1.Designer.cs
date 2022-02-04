@@ -40,6 +40,7 @@
             this.donateButton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.simulateActivity = new System.Windows.Forms.CheckBox();
+            this.cbSleepIfSound = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -73,7 +74,7 @@
             // checkBoxstartup
             // 
             this.checkBoxstartup.AutoSize = true;
-            this.checkBoxstartup.Location = new System.Drawing.Point(46, 202);
+            this.checkBoxstartup.Location = new System.Drawing.Point(168, 274);
             this.checkBoxstartup.Name = "checkBoxstartup";
             this.checkBoxstartup.Size = new System.Drawing.Size(96, 17);
             this.checkBoxstartup.TabIndex = 2;
@@ -83,7 +84,7 @@
             // 
             // SleepNow
             // 
-            this.SleepNow.Location = new System.Drawing.Point(190, 198);
+            this.SleepNow.Location = new System.Drawing.Point(312, 270);
             this.SleepNow.Margin = new System.Windows.Forms.Padding(2);
             this.SleepNow.Name = "SleepNow";
             this.SleepNow.Size = new System.Drawing.Size(64, 21);
@@ -95,7 +96,8 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 239);
+            this.label2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label2.Location = new System.Drawing.Point(0, 313);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(37, 13);
             this.label2.TabIndex = 4;
@@ -114,7 +116,7 @@
             // 
             // donateButton
             // 
-            this.donateButton.Location = new System.Drawing.Point(134, 168);
+            this.donateButton.Location = new System.Drawing.Point(256, 240);
             this.donateButton.Name = "donateButton";
             this.donateButton.Size = new System.Drawing.Size(120, 25);
             this.donateButton.TabIndex = 6;
@@ -129,7 +131,7 @@
             // simulateActivity
             // 
             this.simulateActivity.AutoSize = true;
-            this.simulateActivity.Location = new System.Drawing.Point(46, 132);
+            this.simulateActivity.Location = new System.Drawing.Point(46, 148);
             this.simulateActivity.Name = "simulateActivity";
             this.simulateActivity.Size = new System.Drawing.Size(103, 17);
             this.simulateActivity.TabIndex = 7;
@@ -138,11 +140,22 @@
             this.simulateActivity.Visible = false;
             this.simulateActivity.CheckedChanged += new System.EventHandler(this.simulateActivity_CheckedChanged);
             // 
+            // cbSleepIfSound
+            // 
+            this.cbSleepIfSound.AutoSize = true;
+            this.cbSleepIfSound.Location = new System.Drawing.Point(46, 116);
+            this.cbSleepIfSound.Name = "cbSleepIfSound";
+            this.cbSleepIfSound.Size = new System.Drawing.Size(106, 17);
+            this.cbSleepIfSound.TabIndex = 8;
+            this.cbSleepIfSound.Text = "sleep if no sound";
+            this.cbSleepIfSound.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(406, 326);
+            this.Controls.Add(this.cbSleepIfSound);
             this.Controls.Add(this.simulateActivity);
             this.Controls.Add(this.donateButton);
             this.Controls.Add(this.sleepIfMonitorOff);
@@ -174,6 +187,7 @@
         private System.Windows.Forms.Button donateButton;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox simulateActivity;
+        private System.Windows.Forms.CheckBox cbSleepIfSound;
     }
 }
 

@@ -23,8 +23,13 @@ namespace SystemSleeep
             return true;
         }
 
+        private static bool LastMonitorState = false;
+
+        public static DateTime LastMonitorStateChangeDate;
+
         public static bool IsMonitorOn(){
-            //return false;
+            bool monitorState = true;// on by default
+
             try
             {
                 IntPtr handle = Win32Helper.GetForegroundWindow();
@@ -37,16 +42,22 @@ namespace SystemSleeep
                 {
                     string title= Buff.ToString();
                     Trace.WriteLine($"Win32Helper.GetForegroundWindow():{handle} title:{title}");
-
                 }
 
-                return IsNonZeroHandle;
+                monitorState = IsNonZeroHandle;
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                return false;
+                Debug.WriteLine(ex);
             }
+
+            if (LastMonitorState!= monitorState)
+            {
+                LastMonitorState = monitorState;
+                LastMonitorStateChangeDate = DateTime.Now;
+            }
+            return monitorState;
         }
 
         public static bool IsMonitorOn_old()

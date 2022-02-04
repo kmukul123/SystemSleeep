@@ -15,7 +15,7 @@ namespace SystemSleeep
             // the value will not be zero, but something really small (around 1E-09)
             // so, depending on your context, it is up to you to decide
             // if you want to test for 0 or for a small value
-            return value > 1E-08;
+            return value > 1E-05;
         }
 
         public static float getPeakValue()

@@ -16,12 +16,15 @@ namespace SystemSleeep
     public partial class Form1 : Form
     {
         IdleTimer idletimer;
-        volatile bool MonitorOff;
+        volatile bool MonitorOn;
         private bool AudioIsPlaying => MediaWatcher.IsWindowsPlayingSound();
+
+        public IntPtr MyHandle { get; private set; }
+
         private readonly IntPtr _ScreenStateNotify;
-        private const string SimulateActivityUntilHoursName = "SimulateActivityUntilHours";
-        private int simulateActivityUntilHours;
+        private int SimulateActivityUntilHours;
         private int defaultidletime;
+        
 
         public Form1()
         {
@@ -59,15 +62,17 @@ namespace SystemSleeep
                 notifyIcon1.ShowBalloonTip(500);
                 this.Hide();
             }
-
             else if (FormWindowState.Normal == this.WindowState)
             {
                 //notifyIcon1.Visible = false;
             }
+            this.MyHandle = this.Handle;
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.MyHandle = this.Handle;
             if (DateTime.Now > new DateTime(2022, 10, 1))
             {
                 var url = "https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8";
@@ -79,39 +84,40 @@ The site should open in your browser", "Expired:");
 
             checkBoxstartup.Checked = IsStartupSet();
             //System.Threading.Thread.Sleep(70000);
-            MonitorOff = !SystemHelper.IsMonitorOn();
+            MonitorOn = SystemHelper.IsMonitorOn();
             toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are also donated to charity\nThanks");
 
 
             defaultidletime = int.Parse(GetSetting(this.DefaultIdleTimeConfigName));
             string sleepifMonitoSetting = GetSetting(this.sleepifMonitorOffConfigName);
-            //simulateActivityUntilHours = int.Parse(GetSetting(SimulateActivityUntilHoursName));
+            SimulateActivityUntilHours =  int.Parse(GetSetting(nameof(SimulateActivityUntilHours), "24"));
 
             this.idletimer = new IdleTimer(defaultidletime);
             idletimer.IdleTimeReached += idletimer_IdleTimeReached;
             idletimer.BeforeIdleTimeReached += Idletimer_BeforeIdleTimeReached;
             idletimer.IdleTimeChanged += Idletimer_IdleTimeChanged;
 
-            this.simulateActivity.Text += $" until {simulateActivityUntilHours} hours";
+            this.simulateActivity.Text += $" until {SimulateActivityUntilHours} hours";
             this.textBox1.Text = this.idletimer.GetInterval().ToString();
             this.sleepIfMonitorOff.Checked = bool.Parse(sleepifMonitoSetting);
 
-            this.UpdateLabel2();
+            this.UpdateLabelStatus();
         }
 
         private async void Idletimer_IdleTimeChanged(object sender, EventArgs e)
         {
             if (sleepIfMonitorOff.Checked)
             {
-                MonitorOff = !SystemHelper.IsMonitorOn();
-                if (MonitorOff)
+                MonitorOn = SystemHelper.IsMonitorOn();
+                UpdateLabelStatus();
+
+                if (!MonitorOn)
                 {
-                    UpdateLabel2();
                     Idletimer_BeforeIdleTimeReached(sender, e);
                     await WaitAndSuspend();
                 }
             }
-            if (simulateActivity.Checked && DateTime.Now.Hour < simulateActivityUntilHours)
+            if (simulateActivity.Checked && DateTime.Now.Hour < SimulateActivityUntilHours)
             {
 #if DEBUG
                 var idletime = Win32Helper.GetIdleTimeInSecs();
@@ -119,32 +125,34 @@ The site should open in your browser", "Expired:");
                     SendKeys.SendWait("^{ESC}");
 #endif                    
             }
-            UpdateLabel2();
+            UpdateLabelStatus();
 
         }
 
-        private void UpdateLabel2()
+        private void UpdateLabelStatus()
         {
             if (FormWindowState.Minimized == this.WindowState)
             {
                 this.SetLabel2("Minimized");
                 return;
             }
-                
-            //this.SetLabel2($"{DateTime.Now.ToString("hh:mm:ss")} Ïdle seconds:{idletimer.idletimeinsecs} MonitorOff:{MonitorOff}");
             var status = $"{DateTime.Now.ToString("hh:mm:ss")} Ïdle seconds:{idletimer.idletimeinsecs}";
+            
+            if (sleepIfMonitorOff.Checked)
+                status += $" MonitorOn:{MonitorOn} LastMonitorChanged = {SystemHelper.LastMonitorStateChangeDate}";
 
-            if (MediaWatcher.IsWindowsPlayingSound())
-            {
-#if DEBUG
-                status += $" {status} Playing {MediaWatcher.getPeakValue()}";
-#else
-                status += $" {status} AudioPlaying";
-#endif
+            if (cbSleepIfSound.Checked)
+                if (MediaWatcher.IsWindowsPlayingSound())
+                {
+    #if DEBUG
+                    status += $" Playing {MediaWatcher.getPeakValue()}";
+    #else
+                    status += $" {status} AudioPlaying";
+    #endif
 
-            }
-            else
-                status += $" {status} AudioNotPlaying";
+                }
+                else
+                    status += $" AudioNotPlaying {MediaWatcher.getPeakValue()}";
             
             this.SetLabel2(status);
         }
@@ -170,19 +178,17 @@ The site should open in your browser", "Expired:");
 
         private void Idletimer_BeforeIdleTimeReached(object sender, EventArgs e)
         {
-            if (MediaWatcher.IsWindowsPlayingSound())
+            if (cbSleepIfSound.Checked && MediaWatcher.IsWindowsPlayingSound())
                 return;
             notifyIcon1.BalloonTipText = "SystemSleep will put your system to sleep now";
             notifyIcon1.ShowBalloonTip(500);
-            ScreenHelper.TurnOffScreen(this.Handle);
+            ScreenHelper.TurnOffScreen(MyHandle);
         }
 
         async void idletimer_IdleTimeReached(object sender, EventArgs e)
         {
-            //MonitorOff = !SystemHelper.IsMonitorOn();
-            //MonitorOff = true;
-            Trace.WriteLine("Idletimer reached MonitorOff:" + MonitorOff);
-            if (AudioIsPlaying) {
+            Trace.WriteLine("Idletimer reached MonitorOn:" + MonitorOn);
+            if (AudioIsPlaying && cbSleepIfSound.Checked) {
                 return;
             }
 
@@ -208,13 +214,13 @@ The site should open in your browser", "Expired:");
                 if (idletime > 30 )
                 {
                     SystemHelper.Suspend();
-                    notifyIcon1.BalloonTipText = $"SystemSleep had put your system to sleep idletime:{idletime} MonitorOff:{MonitorOff}";
+                    notifyIcon1.BalloonTipText = $"SystemSleep had put your system to sleep idletime:{idletime} MonitorOn:{MonitorOn}";
                     notifyIcon1.ShowBalloonTip(500);
                     return true;
                 }
                 else
                 {
-                    notifyIcon1.BalloonTipText = $"Skipping sleep as is not off Monitoroff:{MonitorOff} idletime:{idletime}";
+                    notifyIcon1.BalloonTipText = $"Skipping sleep as is On:{MonitorOn} idletime:{idletime}";
                 }
             }
             catch (Exception ex)
@@ -240,17 +246,21 @@ The site should open in your browser", "Expired:");
 
                     if (m.LParam.ToInt32() != 2)
                     {
-                        MonitorOff = false;
+                        MonitorOn = true;
                     }
                     else
                     {
-                        MonitorOff = true;
-                        UpdateLabel2();
+                        MonitorOn = false;
+                        UpdateLabelStatus();
 
                     }
-                    notifyIcon1.BalloonTipText = $"monitoroff={MonitorOff} lparam={m.LParam}";
-                    notifyIcon1.ShowBalloonTip(500);
-                    Trace.WriteLine($"monitoroff={MonitorOff} lparam={m.LParam}" );    
+                    if (sleepIfMonitorOff.Checked)
+                    {
+                        notifyIcon1.BalloonTipText = $"monitorOn={MonitorOn} lparam={m.LParam}";
+                        notifyIcon1.ShowBalloonTip(500);
+                    }
+                    Trace.WriteLine($"MonitorOn={MonitorOn} lparam={m.LParam}" );
+                    Debug.WriteLine($"MonitorOn={MonitorOn} lparam={m.LParam}");
                 }
             }
 
@@ -292,14 +302,14 @@ The site should open in your browser", "Expired:");
             ConfigurationManager.RefreshSection("appSettings");
         }
 
-        private static string GetSetting(String key)
+        private static string GetSetting(String key, string defaultValue=null)
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var ret = config.AppSettings.Settings[key];
             if (ret!=null) {
                 return ret.Value;
             }
-            else { return null; }
+            else { return defaultValue; }
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -314,7 +324,7 @@ The site should open in your browser", "Expired:");
 
         private async void SleepNow_Click(object sender, EventArgs e)
         {
-            ScreenHelper.TurnOffScreen(this.Handle);
+            ScreenHelper.TurnOffScreen(MyHandle);
             await Task.Delay(2000);
             var idletime = Win32Helper.GetIdleTimeInSecs();
             Trace.WriteLine($"SleepNow_Click idletime {idletime}");
